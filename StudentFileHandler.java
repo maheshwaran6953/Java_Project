@@ -55,6 +55,37 @@ public class StudentFileHandler {
         }
     }
 
+    public void replaceAllStudents(ArrayList<Student> students) throws IOException {
+        Path parent = filePath.toAbsolutePath().getParent();
+
+        Path temp = Files.createTempFile(
+            parent, "students-", ".tmp"
+        );
+
+        try{
+            try(BufferedWriter writer = Files.newBufferedWriter(temp)) {
+                for(Student student : students) {
+                    String data = student.getRollNumber() + ","
+                        + student.getName() + ","
+                        + student.getDepartment() + ","
+                        + student.getYear() + ","
+                        + student.getEmail() + ","
+                        + student.getCgpa() + ","
+                        + student.getStatus();
+
+                    writer.write(data);
+                    writer.newLine();
+                }
+            } Files.move(
+                temp,
+                filePath,
+                StandardCopyOption.REPLACE_EXISTING
+            );
+        } finally {
+            Files.deleteIfExists(temp);
+        }
+    }
+
     public ArrayList<Student> readStudents() {
 
         ArrayList<Student> students = new ArrayList<>();
